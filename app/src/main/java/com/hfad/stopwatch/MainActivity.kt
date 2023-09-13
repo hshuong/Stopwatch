@@ -30,7 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         val pauseButton = findViewById<Button>(R.id.pause_button)
         pauseButton.setOnClickListener {
-            saveOffset()
+            saveOffset() // offset da luu duoc thoi gian  da troi qua tu khi
+            // bam start den luc bam pause nay
             stopwatch.stop()
             running = false
         }
@@ -52,6 +53,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveOffset() {
+        // dang chay, bam pause thi save lai thoi gian da troi qua
+        // lay thoi diem hien tai luc bam pause, tru di thoi diem bat dau bam start
+        // duoc thoi gian so giay da troi qua tu bo dem chronometer start
         offset = SystemClock.elapsedRealtime() - stopwatch.base
     }
 
