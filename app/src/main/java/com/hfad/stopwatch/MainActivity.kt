@@ -13,6 +13,11 @@ class MainActivity : AppCompatActivity() {
     private var running = false // Is the stopwatch running?
     private var offset: Long = 0 // The offset from base of stopwatch
 
+    // Key Strings for use with Bundle
+    val OFFSET_KEY = "offset"
+    val RUNNING_KEY = "running"
+    val BASE_KEY ="base"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -20,6 +25,17 @@ class MainActivity : AppCompatActivity() {
         // Chi co the khoi tao bien stopwatch sau khi goi ham setContentView
         // Truoc diem nay doi tuong view Chronometer stopwatch chua ton tai
         stopwatch = findViewById<Chronometer>(R.id.stopwatch)
+
+        if (savedInstanceState !=null) {
+            offset = savedInstanceState.getLong(OFFSET_KEY)
+            running = savedInstanceState.getBoolean(RUNNING_KEY)
+            if (running) {
+                stopwatch.base = savedInstanceState.getLong(BASE_KEY)
+                stopwatch.start()
+            } else {
+                setBaseTime()
+            }
+        }
 
         val startButton = findViewById<Button>(R.id.start_button)
         startButton.setOnClickListener {
@@ -82,6 +98,21 @@ class MainActivity : AppCompatActivity() {
         // lay thoi diem hien tai luc bam pause, tru di thoi diem bat dau bam start
         // duoc thoi gian so giay da troi qua tu bo dem chronometer start
         offset = SystemClock.elapsedRealtime() - stopwatch.base
+    }
+
+    // Truoc khi activity bi destroy do nguoi dung rotate dien thoai
+    // ham onSaveInstanceState duoc goi de luu lai trang thai cua activity
+    // vao 1 Bundle
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putLong(BASE_KEY, stopwatch.base)
+        savedInstanceState.putBoolean(RUNNING_KEY, running)
+        savedInstanceState.putLong(OFFSET_KEY, offset)
+        super.onSaveInstanceState(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+
+        super.onDestroy()
     }
 
 }
