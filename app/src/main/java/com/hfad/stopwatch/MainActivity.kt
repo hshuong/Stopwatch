@@ -86,9 +86,11 @@ class MainActivity : AppCompatActivity() {
     private fun setBaseTime() {
         // base la thoi diem bam nut start, bo dem chronometer bat dau chay
         // dat thoi diem bat dau chay cua bo dem chronometer
-        // la thoi gian hien tai, tru di thoi gian do lech. Do lech offset duoc tao ra
-        // do bam nut pause. Ban dau chua lech thi start bang thoi diem hien
-        // tai cua dong ho luon.
+        // neu da chay roi ma bi pause thi offset > 0 thi de dong ho hien duoc
+        // so giay da qua, can tinh base de thoi diem hien tai
+        // (SystemClock.elapsedRealtime()) cach thoi diem base 1 quang offset
+        // base se nho hon thoi diem hien tai, nghia la tu base den thoi diem hien tai
+        // cach 1 khoang thoi gian roi.
         stopwatch.base = SystemClock.elapsedRealtime() - offset
     }
 
@@ -110,9 +112,20 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    override fun onDestroy() {
-
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
+        if (running) {
+            saveOffset()
+            stopwatch.stop()
+        }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (running) {
+            setBaseTime()
+            stopwatch.start()
+            offset = 0
+        }
+    }
 }
