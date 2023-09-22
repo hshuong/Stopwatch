@@ -3,13 +3,13 @@ package com.hfad.stopwatch
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
-import android.widget.Button
-import android.widget.Chronometer
+import com.hfad.stopwatch.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var stopwatch: Chronometer // the stopwatch. Chua khoi tao
+    // private lateinit var stopwatch: Chronometer // the stopwatch. Chua khoi tao
     // (gan gia tri cho bien) View chronometer stopwatch o day duoc
     // vi stopwatch chua ton tai vao thoi diem nay => phai dung lateinit
+    private lateinit var binding: ActivityMainBinding
     private var running = false // Is the stopwatch running?
     private var offset: Long = 0 // The offset from base of stopwatch
 
@@ -20,25 +20,30 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        // old code
+        //setContentView(R.layout.activity_main)
+        //creates an ActivityMainBinding object that’s linked to the activity’s layout
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         // Chi co the khoi tao bien stopwatch sau khi goi ham setContentView
         // Truoc diem nay doi tuong view Chronometer stopwatch chua ton tai
-        stopwatch = findViewById<Chronometer>(R.id.stopwatch)
+        // stopwatch = findViewById<Chronometer>(R.id.stopwatch)
 
         if (savedInstanceState !=null) {
             offset = savedInstanceState.getLong(OFFSET_KEY)
             running = savedInstanceState.getBoolean(RUNNING_KEY)
             if (running) {
-                stopwatch.base = savedInstanceState.getLong(BASE_KEY)
-                stopwatch.start()
+                binding.stopwatch.base = savedInstanceState.getLong(BASE_KEY)
+                binding.stopwatch.start()
             } else {
                 setBaseTime()
             }
         }
 
-        val startButton = findViewById<Button>(R.id.start_button)
-        startButton.setOnClickListener {
+        //val startButton = findViewById<Button>(R.id.start_button)
+        binding.startButton.setOnClickListener {
             if (!running) {
                 // lay thoi diem SystemClock.elapsedRealtime()
                 // la thoi gian tinh tu luc boot dien thoai den luc bam nut start nay
@@ -55,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
                 // sau khi dat thoi diem bat dau la base, moi chay chronometer tinh
                 // tu thoi diem base
-                stopwatch.start()
+                binding.stopwatch.start()
                 // dat running la true de luu trang thai nut start da bam, dong ho dang chay roi
                 // neu lo bam vao start tiep thi ko vao day duoc, dong ho van dang chay, ko tinh
                 // lai thoi gian base
@@ -63,21 +68,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val pauseButton = findViewById<Button>(R.id.pause_button)
-        pauseButton.setOnClickListener {
+        //val pauseButton = findViewById<Button>(R.id.pause_button)
+        binding.pauseButton.setOnClickListener {
             // khi bam pause, lay thoi diem hien tai, tru di thoi diem start (thoi diem base)
             // de tinh ra khoang thoi gian tu thoi diem base den thoi diem hien tai bam pause
             // luu vao bien offset
             // offset = SystemClock.elapsedRealtime() - stopwatch.base
             saveOffset() // offset da luu duoc thoi gian  da troi qua tu khi
             // bam start den luc bam pause nay
-            stopwatch.stop()
+            binding.stopwatch.stop()
             // doi running thanh false de cho bam duoc nut start
             running = false
         }
 
-        val resetButton =  findViewById<Button>(R.id.reset_button)
-        resetButton.setOnClickListener {
+        binding.resetButton.setOnClickListener {
             offset = 0
             setBaseTime()
         }
@@ -91,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         // (SystemClock.elapsedRealtime()) cach thoi diem base 1 quang offset
         // base se nho hon thoi diem hien tai, nghia la tu base den thoi diem hien tai
         // cach 1 khoang thoi gian roi.
-        stopwatch.base = SystemClock.elapsedRealtime() - offset
+        binding.stopwatch.base = SystemClock.elapsedRealtime() - offset
     }
 
     private fun saveOffset() {
@@ -99,14 +103,14 @@ class MainActivity : AppCompatActivity() {
         // thoi diem base cho den luc bam pause
         // lay thoi diem hien tai luc bam pause, tru di thoi diem bat dau bam start
         // duoc thoi gian so giay da troi qua tu bo dem chronometer start
-        offset = SystemClock.elapsedRealtime() - stopwatch.base
+        offset = SystemClock.elapsedRealtime() - binding.stopwatch.base
     }
 
     // Truoc khi activity bi destroy do nguoi dung rotate dien thoai
     // ham onSaveInstanceState duoc goi de luu lai trang thai cua activity
     // vao 1 Bundle
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putLong(BASE_KEY, stopwatch.base)
+        savedInstanceState.putLong(BASE_KEY, binding.stopwatch.base)
         savedInstanceState.putBoolean(RUNNING_KEY, running)
         savedInstanceState.putLong(OFFSET_KEY, offset)
         super.onSaveInstanceState(savedInstanceState)
@@ -116,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         if (running) {
             saveOffset()
-            stopwatch.stop()
+            binding.stopwatch.stop()
         }
     }
 
@@ -124,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (running) {
             setBaseTime()
-            stopwatch.start()
+            binding.stopwatch.start()
             offset = 0
         }
     }
